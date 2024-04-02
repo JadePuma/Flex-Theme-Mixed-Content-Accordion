@@ -2,7 +2,7 @@
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
   Tutorial Can be found here : https://jadepuma.com/blogs/shopify-tutorials/add-a-content-accordion-section-in-the-flex-theme?_pos=1&_sid=3fb17e635&_ss=r
-  Last editted - 11Mar24
+  Last editted - 02Apr24
 {% endcomment %}
 
 {% if section.blocks.size > 0 %}
@@ -293,8 +293,6 @@
                   transform: translateY(3px) scale(1.2);
                   margin-left:10px;
                   margin-right:10px;
-                  
-                  
                 }
 
                 {% endstyle %}
@@ -310,6 +308,37 @@
   
               <div class="multiple_accordion_content-{{ id }}">
                 <h2 class="accordian_content_heading">{{ block.settings.content_heading }}</h2>
+
+
+                {% if block.settings.image_1 != blank %}
+                <div class="accordion_section_image-container--{{block.id}}">
+                <img  class="accordion_section_image--{{block.id}}" src="{{block.settings.image_1 | img_url: 'master'}}">
+                </div>
+
+
+                {% style %}
+
+                  .accordion_section_image--{{block.id}}{
+                    width:100%;
+                    max-width: {{block.settings.image_max_width}}px;
+                    margin:10px 0;
+                  }
+
+                  .accordion_section_image-container--{{block.id}}{
+                    display:flex;
+                    {% if block.settings.image_alignment == "center" %}
+                    justify-content:center;
+                    {% endif %}
+                  }
+
+                  
+
+                {% endstyle %}
+
+
+                {% endif %}
+
+
                 {{ block.settings.content_text }}
   
                 {% if block.settings.youtube_id != blank %}
@@ -554,6 +583,37 @@
             "label": "Content Heading",
             "default": "<p>Content heading</p>"
           },
+          {
+            "type": "image_picker",
+            "id": "image_1",
+            "label": "Image"
+          },
+          {
+            "type": "range",
+            "id": "image_max_width",
+            "label": "Image max width",
+            "min": 200,
+            "max": 1600,
+            "step": 25,
+            "default":1600,
+            "unit": "px"
+          },
+          {
+              "type": "select",
+              "id": "image_alignment",
+              "label": "Image alignment",
+              "default": "left",
+              "options": [
+                {
+                  "value": "left",
+                  "label": "Left"
+                },
+                {
+                  "value": "center",
+                  "label": "Center"
+                }
+              ]
+            },
           {
             "type": "richtext",
             "id": "content_text",
