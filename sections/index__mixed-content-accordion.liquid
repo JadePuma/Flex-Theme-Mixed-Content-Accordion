@@ -13,18 +13,6 @@
     {% assign border_color = settings.border_color %}
     {% assign accordion_icon_color = section.settings.accordion_icon_color %}
   
-    {% if template contains 'page' %}
-      {% assign brand_page = page %}
-    {% elsif template contains 'product' %}
-      {% assign page_handle = product.vendor | handleize %}
-  
-      {% if page_handle == 'habidecor' %}
-        {% assign page_handle = 'abyss' %}
-      {% endif %}
-  
-      {% assign brand_page = pages[page_handle] %}
-    {% endif %}
-  
     {% style %}
       #shopify-section-{{ id }} {
         padding-top: {{ padding_top }}px;
@@ -105,13 +93,7 @@
       "
     >
       <div class="multiple_accordion_container-{{ id }}" style="margin-bottom:-20px !important;">
-        {% if brand_page.metafields['brand-details']['accordion-heading'] != blank %}
-          {% if section.settings.title == blank %}
-            <h2 class="multiple_accordion_heading-{{ id }}">
-              {{ brand_page.metafields['brand-details']['accordion-heading'] }}
-            </h2>
-  
-          {% else %}
+          {% if section.settings.title != blank %}
             <h2 class="multiple_accordion_heading-{{ id }}">{{ section.settings.title }}</h2>
           {% endif %}
   
@@ -121,7 +103,6 @@
               style="margin-bottom:40px; border: 0.5px solid {{border_color}};"
             ></div>
           {% endif %}
-        {% endif %}
   
         {% for block in section.blocks %}
 
@@ -359,7 +340,7 @@
                   <br>
                 {% endif %}
   
-                {% if block.settings.youtube_id_2 != blank %}
+                {% comment %} {% if block.settings.youtube_id_2 != blank %}
                   <br>
                   <div>
                     <style>
@@ -375,7 +356,7 @@
                     </div>
                   </div>
                   <br>
-                {% endif %}
+                {% endif %} {% endcomment %}
                 {{ block.settings.liquid_code }}
               </div>
             </div>
@@ -631,11 +612,11 @@
             "id": "youtube_id",
             "label": "Youtube Video ID"
           },
-          {
-            "type": "text",
-            "id": "youtube_id_2",
-            "label": "Youtube Video ID"
-          },
+          // {
+          //   "type": "text",
+          //   "id": "youtube_id_2",
+          //   "label": "Youtube Video ID"
+          // },
           {
             "type": "liquid",
             "id": "liquid_code",
