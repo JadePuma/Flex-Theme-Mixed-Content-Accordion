@@ -1,8 +1,8 @@
 {% comment %}
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
-  Tutorial Can be found here : https://jadepuma.com/blogs/shopify-tutorials/add-a-content-accordion-section-in-the-flex-theme?_pos=1&_sid=3fb17e635&_ss=r
-  Last editted - 02Apr24
+  Tutorial Can be found here : https://flexthemesections.com/products/the-videographer-snowboard
+  Last editted - 10Aug24
 {% endcomment %}
 
 {% if section.blocks.size > 0 %}
@@ -21,7 +21,6 @@
           width: 100%;
         {% endif %}
       }
-  
   
       .multiple_accordion_container-{{ id }}{
           padding: 0px 10px;
@@ -312,13 +311,9 @@
                     {% endif %}
                   }
 
-                  
-
                 {% endstyle %}
 
-
                 {% endif %}
-
 
                 {{ block.settings.content_text }}
   
@@ -410,7 +405,6 @@
         })
       {% endif %}
   
-  
         //slide down the clicked item and add the open class
         $clickedItem.slideDown(300).addClass('open');
         $clickedItemIconCollapse.toggle();
@@ -428,6 +422,10 @@
     {
     "name": "JP Content Accordion",
     "settings": [
+      {
+        "type": "paragraph",
+        "content": "[See demo](https://flexthemesections.com/products/the-videographer-snowboard)"
+      },
       {
         "type": "header",
         "content": "Settings"
