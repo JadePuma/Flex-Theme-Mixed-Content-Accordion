@@ -2,7 +2,7 @@
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
   Tutorial Can be found here : https://flexthemesections.com/products/the-videographer-snowboard
-  Last editted - 10Aug24
+  Last editted - 19Aug24
 {% endcomment %}
 
 {% if section.blocks.size > 0 %}
@@ -20,12 +20,14 @@
         {% if section.settings.width == 'wide' %}
           width: 100%;
         {% endif %}
+
       }
-  
+
       .multiple_accordion_container-{{ id }}{
           padding: 0px 10px;
           margin:20px auto;
       }
+
       .multiple_accordion_heading-{{ id }}{
         margin-bottom: 15px;
         font-size:30px;
@@ -51,11 +53,21 @@
       .accordian_content_heading-{{ id }}{
           margin-top:30px;
       }
+
+      .multiple_accordion_container-{{ id }} .icon svg{
+        height: 100% !important;
+      }
+
+
   
       .multiple_accordion_title-{{ id }}:hover{
         cursor:pointer;
         background-color:{{section.settings.tab_hover_color}};
       }
+
+
+
+
       .accordion_expand-{{ id }}{
           /* transform:translateY(2px); */
           margin:0px 10px;
@@ -73,7 +85,7 @@
       .multiple_accordion_content-{{ id }}{
         text-align:left;
         display:none;
-        padding:20px 10px;
+        padding:5px 10px;
 
   
       }
@@ -81,6 +93,16 @@
         border-bottom:0px solid {{border_color}};
 
       }
+
+      .multiple_accordion_title-{{ id }}:hover{
+        background-color: unset;
+      }
+
+      .multiple_accordion_title-{{ id }}:active{
+        background-color:{{section.settings.tab_hover_color}};
+      }
+
+
       }
     {% endstyle %}
   
