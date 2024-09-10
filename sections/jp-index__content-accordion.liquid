@@ -2,7 +2,7 @@
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
   Tutorial Can be found here : https://flexthemesections.com/products/the-videographer-snowboard
-  Last editted - 9Sep24
+  Last editted - Sep1024
 {% endcomment %}
 
 {% if section.blocks.size > 0 %}
@@ -20,7 +20,10 @@
         {% if section.settings.width == 'wide' %}
           width: 100%;
         {% endif %}
+      }
 
+      .multiple_accordion_item{
+        /*border-bottom:1px solid {{border_color}};*/
       }
 
       .multiple_accordion_container-{{ id }}{
@@ -30,6 +33,8 @@
 
       .multiple_accordion_heading-{{ id }}{
         margin-bottom: 15px;
+        font-size:30px;
+        font-weight:400;
         color:{{section.settings.heading_color}};
       }
       .multiple_accordion_title-{{ id }}{
@@ -39,8 +44,8 @@
         padding: 10px 0px 10px;
         border-bottom:1px solid {{border_color}};
         color:{{section.settings.tab_heading_color}};
-
       }
+
       .multiple_accordion_content-{{ id }}{
         text-align:left;
         display:none;
@@ -62,6 +67,9 @@
         cursor:pointer;
         background-color:{{section.settings.tab_hover_color}};
       }
+
+
+
 
       .accordion_expand-{{ id }}{
           /* transform:translateY(2px); */
@@ -249,9 +257,8 @@
             </div>
   
           {% elsif block.type == 'content' %}
-
-            {% unless block.settings.hide_if_no_description  and  block.settings.content_text == blank %}
-
+            
+            {% capture block_content %}
 
             <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" >
               <div class="multiple_accordion_title-{{ id }}">
@@ -369,12 +376,40 @@
                   </div>
                   <br>
                 {% endif %} {% endcomment %}
+                
                 {{ block.settings.liquid_code }}
               </div>
             </div>
 
-            {% endunless %}
-  
+            {% endcapture %}
+
+
+
+            {% assign liquid_code_size = block.settings.liquid_code | strip_html | escape | size %}
+            
+
+            {% assign has_content = false %}
+            {% if  block.settings.content_heading != blank %}
+              {% assign has_content = true %}
+            {% elsif block.settings.image_1 != blank  %}
+              {% assign has_content = true %}
+            {% elsif block.settings.content_text != blank %}
+              {% assign has_content = true %}
+            {% elsif block.settings.youtube_id != blank %}
+              {% assign has_content = true %}
+            {% elsif block.settings.youtube_id_2 != blank %}
+              {% assign has_content = true %}
+            {% elsif liquid_code_size  > 0  %}
+              {% assign has_content = true %}     
+            {% endif %}      
+
+
+            {% unless block.settings.hide_block_if_selected_metafield_empty and block.settings.selected_metafield == blank %}
+              {% unless has_content == false %}
+                  {{ block_content }}
+              {% endunless %}
+            {% endunless %}  
+
           {% endif %}
         {% endfor %}
       </div>
@@ -551,18 +586,12 @@
             "content" : "Heading"
           },
           {
-          "type": "text",
-          "id": "custom_id",
-          "label": "Custom ID",
-          "info" : "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
-        },
-      {
-        "type": "text",
-        "id": "icon_label",
-        "label": "Icon",
-        "placeholder": "Enter icon name",
-        "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
-      },
+            "type": "text",
+            "id": "icon_label",
+            "label": "Icon",
+            "placeholder": "Enter icon name",
+            "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
+          },
           {
             "type": "richtext",
             "id": "title",
@@ -617,12 +646,6 @@
             "default": "<p>Accordion content</p>"
           },
           {
-          "type": "checkbox",
-          "id": "hide_if_no_description",
-          "label": "Hide block if the above text box value is blank.",
-          "default": false
-          },
-          {
             "type": "text",
             "id": "youtube_id",
             "label": "Youtube Video ID"
@@ -636,7 +659,28 @@
             "type": "liquid",
             "id": "liquid_code",
             "label": "Liquid/HTML Input"
-          }
+          },
+          {
+            "type": "header",
+            "content" : "Advanced Options"
+          },
+          {
+          "type": "checkbox",
+          "id": "hide_block_if_selected_metafield_empty",
+          "label": "Hide block if selected metafield empty",
+          "default": false
+          },
+          {
+            "type": "text",
+            "id": "selected_metafield",
+            "label": "Selected metafield",
+          },
+          {
+          "type": "text",
+          "id": "custom_id",
+          "label": "Custom ID",
+          "info" : "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
+        }
         ]
       },
       {
