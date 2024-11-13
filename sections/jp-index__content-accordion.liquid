@@ -2,7 +2,7 @@
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
   Tutorial Can be found here : https://flexthemesections.com/products/the-videographer-snowboard
-  Last editted - Sep1024
+  Last editted - 12Nov24
 {% endcomment %}
 
 {% if section.blocks.size > 0 %}
@@ -61,15 +61,10 @@
         height: 100% !important;
       }
 
-
-  
       .multiple_accordion_title-{{ id }}:hover{
         cursor:pointer;
         background-color:{{section.settings.tab_hover_color}};
       }
-
-
-
 
       .accordion_expand-{{ id }}{
           /* transform:translateY(2px); */
@@ -83,7 +78,7 @@
           /* transform:translateY(2px); */
           margin:0px 10px;
       }
-  
+
       @media only screen and (max-width: 600px) {
       .multiple_accordion_content-{{ id }}{
         text-align:left;
@@ -129,7 +124,6 @@
           {% endif %}
   
         {% for block in section.blocks %}
-
 
           {% if block.type == 'shipping' %}
             <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
@@ -191,8 +185,6 @@
                 {{ shop.shipping_policy }}
               </div>
             </div>
-  
-          
   
           {% elsif block.type == 'returns' %}
             <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
@@ -257,6 +249,23 @@
             </div>
   
           {% elsif block.type == 'content' %}
+
+            {% style %}
+  
+              .accordion_section_image--{{block.id}}{
+                width:100%;
+                max-width: {{block.settings.image_max_width}}px;
+                margin:10px 0;
+              }
+  
+              .accordion_section_image-container--{{block.id}}{
+                display:flex;
+                {% if block.settings.image_alignment == "center" %}
+                justify-content:center;
+                {% endif %}
+              }
+  
+            {% endstyle %}
             
             {% capture block_content %}
 
@@ -319,24 +328,6 @@
                 <img  class="accordion_section_image--{{block.id}}" src="{{block.settings.image_1 | img_url: 'master'}}">
                 </div>
 
-
-                {% style %}
-
-                  .accordion_section_image--{{block.id}}{
-                    width:100%;
-                    max-width: {{block.settings.image_max_width}}px;
-                    margin:10px 0;
-                  }
-
-                  .accordion_section_image-container--{{block.id}}{
-                    display:flex;
-                    {% if block.settings.image_alignment == "center" %}
-                    justify-content:center;
-                    {% endif %}
-                  }
-
-                {% endstyle %}
-
                 {% endif %}
 
                 {{ block.settings.content_text }}
@@ -358,26 +349,15 @@
                   </div>
                   <br>
                 {% endif %}
-  
-                {% comment %} {% if block.settings.youtube_id_2 != blank %}
-                  <br>
-                  <div>
-                    <style>
-                      .embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; }
-                      .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-                    </style>
-                    <div class="embed-container">
-                      <iframe
-                        src="https://www.youtube.com/embed/{{ block.settings.youtube_id_2 }}"
-                        frameborder="0"
-                        allowfullscreen
-                      ></iframe>
-                    </div>
-                  </div>
-                  <br>
-                {% endif %} {% endcomment %}
                 
                 {{ block.settings.liquid_code }}
+
+                {% if block.settings.image_2 != blank %}
+                <div class="accordion_section_image-container--{{block.id}}">
+                <img  class="accordion_section_image--{{block.id}}" src="{{block.settings.image_2 | img_url: 'master'}}">
+                </div>
+                {% endif %}
+                
               </div>
             </div>
 
@@ -392,6 +372,8 @@
             {% if  block.settings.content_heading != blank %}
               {% assign has_content = true %}
             {% elsif block.settings.image_1 != blank  %}
+              {% assign has_content = true %}
+            {% elsif block.settings.image_2 != blank  %}
               {% assign has_content = true %}
             {% elsif block.settings.content_text != blank %}
               {% assign has_content = true %}
@@ -611,7 +593,7 @@
           {
             "type": "image_picker",
             "id": "image_1",
-            "label": "Image"
+            "label": "Top Image"
           },
           {
             "type": "range",
@@ -650,15 +632,15 @@
             "id": "youtube_id",
             "label": "Youtube Video ID"
           },
-          // {
-          //   "type": "text",
-          //   "id": "youtube_id_2",
-          //   "label": "Youtube Video ID"
-          // },
           {
             "type": "liquid",
             "id": "liquid_code",
             "label": "Liquid/HTML Input"
+          },
+          {
+            "type": "image_picker",
+            "id": "image_2",
+            "label": "Bottom Image"
           },
           {
             "type": "header",
@@ -756,4 +738,3 @@
     ]
   }
   {% endschema %}
-  
