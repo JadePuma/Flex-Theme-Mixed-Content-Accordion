@@ -11,7 +11,13 @@
   {% assign padding_bottom = section.settings.padding_bottom %}
   {% assign width = section.settings.width %}
   {% assign border_color = settings.border_color %}
-  {% assign accordion_icon_color = settings.link_color %}
+  {% capture accordion_icon_color %}
+    {% if section.settings.accordion_icon_color != blank %}
+      {{ section.settings.accordion_icon_color }}
+    {% else %}
+      {{ settings.link_color }}
+    {% endif %}
+  {% endcapture %}
 
   {% style %}
     #shopify-section-{{ id }} {
