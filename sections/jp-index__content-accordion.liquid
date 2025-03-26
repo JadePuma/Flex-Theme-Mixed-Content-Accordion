@@ -120,13 +120,7 @@
     "
   >
     <div class="multiple_accordion_container-{{ id }}" style="margin-bottom:-20px !important;">
-      {% if brand_page.metafields['brand-details']['accordion-heading'] != blank %}
-        {% if section.settings.title == blank %}
-          <h2 class="multiple_accordion_heading-{{ id }}">
-            {{ brand_page.metafields['brand-details']['accordion-heading'] }}
-          </h2>
-
-        {% else %}
+        {% if section.settings.title != blank %}
           <h2 class="multiple_accordion_heading-{{ id }}">{{ section.settings.title }}</h2>
         {% endif %}
 
@@ -136,8 +130,6 @@
             style="margin-bottom:40px; border: 0.5px solid {{border_color}};"
           ></div>
         {% endif %}
-      {% endif %}
-
       {% for block in section.blocks %}
 
 
@@ -384,8 +376,10 @@
             </div>
 
             <div class="multiple_accordion_content-{{ id }}">
-              <h2 class="accordian_content_heading">{{ block.settings.content_heading }}</h2>
-
+              {% unless block.settings.content_heading == blank %}
+                <h2 class="accordian_content_heading">{{ block.settings.content_heading }}</h2>
+              {% endunless %}
+  
 
               {% if block.settings.image_1 != blank %}
               <div class="accordion_section_image-container--{{block.id}}">
@@ -611,26 +605,22 @@
     {
       "type": "color",
       "id": "tab_active_background_color",
-      "label": "Active tab background color",
-      "default": "#bba9c3"
+      "label": "Active tab background color"
     },
     {
       "type": "color",
       "id": "tab_non_active_background_color",
-      "label": "Non-Active tab color",
-      "default": "#E0DAE5"
+      "label": "Non-Active tab color"
     },
     {
       "type": "color",
       "id": "tab_hover_color",
-      "label": "Tab hover color",
-      "default": "#E0DAE5"
+      "label": "Tab hover color"
     },
     {
       "type": "color",
       "id": "tab_hover_text_color",
-      "label": "Tab hover color",
-      "default": "#FFFFFF"
+      "label": "Tab hover color"
     },
     {
       "type": "color",
@@ -645,8 +635,7 @@
     {
       "type": "color",
       "id": "accordion_inner_background",
-      "label": "Content background",
-      "default":"#f8f9f9"
+      "label": "Content background"
     },
     {
       "type": "header",
