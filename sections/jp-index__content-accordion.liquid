@@ -134,7 +134,7 @@
 
 
         {% if block.type == 'shipping' %}
-          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
+          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" data-depth="1">
             <div class="multiple_accordion_title-{{ id }}">
               <div>
                 <span class="accordion_expand-{{ id }} icon" data-icon="plus">
@@ -197,7 +197,7 @@
         
 
         {% elsif block.type == 'returns' %}
-          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
+          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" data-depth="1">
             <div class="multiple_accordion_title-{{ id }}">
               <div>
                 <span class="accordion_expand-{{ id }} icon" data-icon="plus">
@@ -320,12 +320,12 @@
             </div>
           </div>
 
-        {% elsif block.type == 'content' %}
+        {% elsif block.type == 'content' or block.type == 'nested_content' %}
 
           {% unless block.settings.hide_if_no_description  and  block.settings.content_text == blank %}
 
 
-          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" >
+          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" data-depth="1">
             <div class="multiple_accordion_title-{{ id }}">
               <div>
                 <span class="accordion_expand-{{ id }} icon" data-icon="plus">
@@ -448,6 +448,163 @@
                 <br>
               {% endif %}
               {{ block.settings.liquid_code }}
+              
+
+              {% if block.type == 'nested_content' and block.settings.nested_accordion_count > 0 %}
+              {% assign count = block.settings.nested_accordion_count | times:1 %}
+              {% for i in (1..count) %}
+                  {% capture prefix %}nested_{{ i }}{% endcapture %}
+                  {% assign prefix = prefix | strip %}
+
+                  {% assign icon_label_key        = prefix | append: '_icon_label' %}
+                  {% assign title_key             = prefix | append: '_title' %}
+                  {% assign content_heading_key   = prefix | append: '_content_heading' %}
+                  {% assign image_key             = prefix | append: '_image_1' %}
+                  {% assign image_max_width_key   = prefix | append: '_image_max_width' %}
+                  {% assign image_alignment_key   = prefix | append: '_image_alignment' %}
+                  {% assign content_text_key      = prefix | append: '_content_text' %}
+                  {% assign hide_if_blank_key     = prefix | append: '_hide_if_no_description' %}
+                  {% assign youtube_id_key        = prefix | append: '_youtube_id' %}
+                  {% assign liquid_code_key       = prefix | append: '_liquid_code' %}
+
+                  {% assign icon_label        = block.settings[icon_label_key] %}
+                  {% assign title             = block.settings[title_key] %}
+                  {% assign content_heading   = block.settings[content_heading_key] %}
+                  {% assign image             = block.settings[image_key] %}
+                  {% assign image_max_width   = block.settings[image_max_width_key] %}
+                  {% assign image_alignment   = block.settings[image_alignment_key] %}
+                  {% assign content_text      = block.settings[content_text_key] %}
+                  {% assign hide_if_blank     = block.settings[hide_if_blank_key] %}
+                  {% assign youtube_id        = block.settings[youtube_id_key] %}
+                  {% assign liquid_code       = block.settings[liquid_code_key] %}
+
+                  <div class="multiple_accordion_item item-{{ id }} is-nested" data-depth="2" >
+                    <div class="multiple_accordion_title-{{ id }}">
+                      <div>
+                        <span class="accordion_expand-{{ id }} icon" data-icon="plus">
+                          <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                            <g id="plus">
+                              <polygon points="95 46 54 46 54 5 46 5 46 46 5 46 5 54 46 54 46 95 54 95 54 54 95 54 95 46"></polygon>
+                            </g>
+                          </svg>
+                        </span>
+                        <span class="accordion_collapse-{{ id }} icon" style="display:none;" data-icon="minus">
+                          <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                            <g id="minus">
+                              <rect x="5" y="46" width="90" height="8"></rect>
+                            </g>
+                          </svg>
+                        </span>
+                      </div>
+
+                    {% if icon_label != blank %}
+
+                      {%- assign icon = icon_label | downcase -%}
+
+                    <span>
+                    <span class="accordion-icon">
+                    {%
+                        render 'icon',
+                        name: icon
+                        %}
+                      </span>
+
+                      {% style %}
+
+                      .accordion-icon .icon{
+                        transform: translateY(3px) scale(1.2);
+                        margin-left:10px;
+                        margin-right:10px;
+                      }
+
+                      {% endstyle %}
+
+
+                      {% endif %}
+
+
+                      {{ title | strip_html }}
+                    </span>
+                    
+                    </div>
+
+                    <div class="multiple_accordion_content-{{ id }}">
+                      {% unless content_heading == blank %}
+                        <h2 class="accordian_content_heading">{{ content_heading }}</h2>
+                      {% endunless %}
+          
+
+                      {% if image_1 != blank %}
+                      <div class="accordion_section_image-container--{{block.id}}">
+                      <img  class="accordion_section_image--{{block.id}}" src="{{image_1 | img_url: 'master'}}">
+                      </div>
+
+
+                      {% style %}
+
+                        .accordion_section_image--{{block.id}}{
+                          width:100%;
+                          max-width: {{image_max_width}}px;
+                          margin:10px 0;
+                        }
+
+                        .accordion_section_image-container--{{block.id}}{
+                          display:flex;
+                          {% if image_alignment == "center" %}
+                          justify-content:center;
+                          {% endif %}
+                        }
+
+                        
+
+                      {% endstyle %}
+
+
+                      {% endif %}
+
+
+                      {{ content_text }}
+
+                      {% if youtube_id != blank %}
+                        <br>
+                        <div>
+                          <style>
+                            .embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; }
+                            .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+                          </style>
+                          <div class="embed-container">
+                            <iframe
+                              src="https://www.youtube.com/embed/{{ youtube_id }}"
+                              frameborder="0"
+                              allowfullscreen
+                            ></iframe>
+                          </div>
+                        </div>
+                        <br>
+                      {% endif %}
+
+                      {% if youtube_id_2 != blank %}
+                        <br>
+                        <div>
+                          <style>
+                            .embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; }
+                            .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+                          </style>
+                          <div class="embed-container">
+                            <iframe
+                              src="https://www.youtube.com/embed/{{ youtube_id_2 }}"
+                              frameborder="0"
+                              allowfullscreen
+                            ></iframe>
+                          </div>
+                        </div>
+                        <br>
+                      {% endif %}
+                      {{ liquid_code }}
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endif %}
             </div>
           
           </div>
@@ -461,66 +618,88 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-  <script>
+<script>
+(() => {
+  const ACC_ID = '{{ id }}';                                                       // accordion namespace
+  console.log('[Accordion] init', { ACC_ID });                                     // dbg
 
-      {% if section.settings.open_first_accordion_on_page_load %}
-         setTimeout(()=>{
-            $('.firstAccordionItem').click() 
-         },0)
-      {% endif %}
+  const sel = {
+    item: `.item-${ACC_ID}`,                                                       // a single accordion item at any level
+    title: `.multiple_accordion_title-${ACC_ID}`,                                  // clickable header
+    content: `.multiple_accordion_content-${ACC_ID}`,                              // collapsible body
+    expand: `.accordion_expand-${ACC_ID}`,                                         // plus icon
+    collapse: `.accordion_collapse-${ACC_ID}`                                      // minus icon
+  };
 
+  const setIcons = ($it, open) => {                                                // toggle icons for one item
+    const $title = $it.children(sel.title);
+    const $expand = $title.find(sel.expand);
+    const $collapse = $title.find(sel.collapse);
+    console.log('[Accordion] setIcons', { open, it: $it.get(0) });                 // dbg
+    if (open) { $expand.hide(); $collapse.show(); $title.addClass('active'); }     // show minus
+    else { $expand.show(); $collapse.hide(); $title.removeClass('active'); }       // show plus
+  };
 
-      $('.item-{{ id }}').click(function(){
+  // Only toggle when the TITLE is clicked; scope actions to siblings in the SAME parent (same depth)  //
+  $(document)
+    .off('click.accordion', sel.title)
+    .on('click.accordion', sel.title, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
 
-      
-      //get the clicked item
-      $clickedItem = $('.multiple_accordion_content-{{ id }}',this);
-      $clickedItemIconExpand = $('.accordion_expand-{{ id }}',this);
-      $clickedItemIconCollapse = $('.accordion_collapse-{{ id }}',this);
-  let $title = $('.multiple_accordion_title-{{ id }}', this);
+      const $title = $(this);
+      const $item = $title.closest(sel.item);                                      // the item being toggled (clicked)
+      const $groupParent = $item.parent();                                         // parent container defines depth
+      const $peers = $groupParent.children(sel.item);                              // only same-depth items
+      const $content = $item.children(sel.content);                                // direct child content only
 
-      // is the clicked item already open?
-      if(($clickedItem.hasClass('open'))){
-         //remove the class, slide it up and return early
+      console.log('[Accordion] click', {
+        item: $item.get(0),
+        groupParent: $groupParent.get(0),
+        peers: $peers.length
+      });                                                                           // dbg
 
-          $clickedItem.removeClass('open').slideUp(300);
-          $clickedItemIconCollapse.toggle();
-          $clickedItemIconExpand.toggle();
-          $title.removeClass('active'); // Remove background color class
-
-          return;
+      if ($content.hasClass('open')) {                                             // closing current
+        console.log('[Accordion] closing current');                                 // dbg
+        $content.removeClass('open').slideUp(300);
+        setIcons($item, false);
+        return;
       }
 
-    {% if section.settings.auto_close %}
-      $('.multiple_accordion_content-{{ id }}').removeClass('open').slideUp(300);
-      $('.multiple_accordion_title-{{ id }}').removeClass('active'); // Remove class from all before opening new one
+      {% if section.settings.auto_close %}
+      console.log('[Accordion] auto_close peers in same parent');                   // dbg
+      $peers.not($item).each((i, el) => {                                          // only siblings, not descendants
+        const $peer = $(el);
+        const $peerContent = $peer.children(sel.content);                          // direct child content only
+        if ($peerContent.hasClass('open')) console.log('[Accordion] closing peer', { i, el }); // dbg
+        $peerContent.removeClass('open').slideUp(300);
+        setIcons($peer, false);
+      });
+      {% endif %}
 
-      document.querySelectorAll('.multiple_accordion_content-{{ id }}').forEach((el, index)=>{
-        if (el.classList.contains("open")) {
-          document.querySelectorAll('.accordion_expand-{{ id }}')[index].style.display = "none";
-          document.querySelectorAll('.accordion_collapse-{{ id }}')[index].style.display = "block";
-        }
-        else{
-          document.querySelectorAll('.accordion_expand-{{ id }}')[index].style.display = "block";
-          document.querySelectorAll('.accordion_collapse-{{ id }}')[index].style.display = "none";
-        }
-      })
-    {% endif %}
-
-
-      //slide down the clicked item and add the open class
-      $clickedItem.slideDown(300).addClass('open');
-      $clickedItemIconCollapse.toggle();
-      $clickedItemIconExpand.toggle();
-      $title.addClass('active'); // Add background color class
-
+      console.log('[Accordion] opening current');                                   // dbg
+      $content.slideDown(300).addClass('open');                                    // open current
+      setIcons($item, true);
     });
 
-    //limit clickable aread to the accordion title
-    $( '.multiple_accordion_content-{{ id }}' ).click(function() {
-      event.stopImmediatePropagation()
+  // Clicks inside content shouldn’t toggle anything (protect nested areas)        //
+  $(document)
+    .off('click.accordionContent', sel.content)
+    .on('click.accordionContent', sel.content, function (e) {
+      console.log('[Accordion] content click ignored', { target: e.target });      // dbg
+      e.stopPropagation();
     });
-  </script>
+
+  // Optionally open the first item by clicking its TITLE (not the whole item)     //
+  {% if section.settings.open_first_accordion_on_page_load %}
+  setTimeout(() => {
+    const $firstTitle = $('.firstAccordionItem').children(sel.title).first();
+    console.log('[Accordion] open_first_accordion_on_page_load', { found: $firstTitle.length }); // dbg
+    if ($firstTitle.length) $firstTitle.trigger('click');
+  }, 0);
+  {% endif %}
+})();
+</script>
 {% endif %}
 
 {% schema %}
@@ -648,8 +827,378 @@
     }
   ],
   "blocks": [
+    {
+      "name": "Nested content",
+      "type": "nested_content",
+      "settings": [
+        {
+          "type": "header",
+          "content" : "Heading"
+        },
+        {
+        "type": "text",
+        "id": "custom_id",
+        "label": "Custom ID",
+        "info" : "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
+        },
+        {
+          "type": "text",
+          "id": "icon_label",
+          "label": "Icon",
+          "placeholder": "Enter icon name",
+          "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
+        },
+        {
+          "type": "richtext",
+          "id": "title",
+          "label": "Accordion Item Heading",
+          "default": "<p>Accordion Item Heading</p>"
+        },
+        {
+          "type": "header",
+          "content" : "Content"
+        },
+        {
+          "type": "richtext",
+          "id": "content_heading",
+          "label": "Content Heading",
+          "default": "<p>Content heading</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "image_max_width",
+          "label": "Image max width",
+          "min": 200,
+          "max": 1600,
+          "step": 25,
+          "default":1600,
+          "unit": "px"
+        },
+        {
+            "type": "select",
+            "id": "image_alignment",
+            "label": "Image alignment",
+            "default": "left",
+            "options": [
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "center",
+                "label": "Center"
+              }
+            ]
+          },
+        {
+          "type": "richtext",
+          "id": "content_text",
+          "label": "Text",
+          "default": "<p>Accordion content</p>"
+        },
+        {
+        "type": "checkbox",
+        "id": "hide_if_no_description",
+        "label": "Hide block if the above text box value is blank.",
+        "default": false
+        },
+        {
+          "type": "text",
+          "id": "youtube_id",
+          "label": "Youtube Video ID"
+        },
+        {
+          "type": "text",
+          "id": "youtube_id_2",
+          "label": "Youtube Video ID"
+        },
+        {
+          "type": "liquid",
+          "id": "liquid_code",
+          "label": "Liquid/HTML Input" 
+        },
+          {
+            "type": "header",
+            "content" : "Nested Accordions"
+          },
+          {
+            "type": "range",
+            "id": "nested_accordion_count",
+            "label": "Nest Accordion Count",
+          "min": 0,
+          "max": 3,
+          "step": 1,
+          "default":0
+          },
+                    {
+            "type": "header",
+            "content" : "Nested Accordion #1",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+          },
+        {
+          "type": "text",
+          "id": "nested_1_icon_label",
+          "label": "Icon",
+          "placeholder": "Enter icon name",
+          "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+          "type": "richtext",
+          "id": "nested_1_title",
+          "label": "Accordion Item Heading",
+          "default": "<p>Accordion Item Heading</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+          "type": "richtext",
+          "id": "nested_1_content_heading",
+          "label": "Content Heading",
+          "default": "<p>Content heading</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "nested_1_image_1",
+          "label": "Image",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+          "type": "range",
+          "id": "nested_1_image_max_width",
+          "label": "Image max width",
+          "min": 200,
+          "max": 1600,
+          "step": 25,
+          "default":1600,
+          "unit": "px",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+            "type": "select",
+            "id": "nested_1_image_alignment",
+            "label": "Image alignment",
+            "default": "left",
+            "options": [
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "center",
+                "label": "Center"
+              }
+            ],
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+          },
+        {
+          "type": "richtext",
+          "id": "nested_1_content_text",
+          "label": "Text",
+          "default": "<p>Accordion content</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+        "type": "checkbox",
+        "id": "nested_1_hide_if_no_description",
+        "label": "Hide block if the above text box value is blank.",
+        "default": false,
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+          "type": "text",
+          "id": "nested_1_youtube_id",
+          "label": "Youtube Video ID",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+        {
+          "type": "liquid",
+          "id": "nested_1_liquid_code",
+          "label": "Liquid/HTML Input",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+        },
+                    {
+            "type": "header",
+            "content" : "Nested Accordion #2",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+          },
+        {
+          "type": "text",
+          "id": "nested_2_icon_label",
+          "label": "Icon",
+          "placeholder": "Enter icon name",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+          "type": "richtext",
+          "id": "nested_2_title",
+          "label": "Accordion Item Heading",
+          "default": "<p>Accordion Item Heading</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+          "type": "richtext",
+          "id": "nested_2_content_heading",
+          "label": "Content Heading",
+          "default": "<p>Content heading</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "nested_2_image_1",
+          "label": "Image",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+          "type": "range",
+          "id": "nested_2_image_max_width",
+          "label": "Image max width",
+          "min": 200,
+          "max": 1600,
+          "step": 25,
+          "default":1600,
+          "unit": "px",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+            "type": "select",
+            "id": "nested_2_image_alignment",
+            "label": "Image alignment",
+            "default": "left",
+            "options": [
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "center",
+                "label": "Center"
+              }
+            ],
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+          },
+        {
+          "type": "richtext",
+          "id": "nested_2_content_text",
+          "label": "Text",
+          "default": "<p>Accordion content</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+        "type": "checkbox",
+        "id": "nested_2_hide_if_no_description",
+        "label": "Hide block if the above text box value is blank.",
+        "default": false,
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+          "type": "text",
+          "id": "nested_2_youtube_id",
+          "label": "Youtube Video ID",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+        {
+          "type": "liquid",
+          "id": "nested_2_liquid_code",
+          "label": "Liquid/HTML Input",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
+        },
+                    {
+            "type": "header",
+            "content" : "Nested Accordion #3",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+          },
+        {
+          "type": "text",
+          "id": "nested_3_icon_label",
+          "label": "Icon",
+          "placeholder": "Enter icon name",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+          "type": "richtext",
+          "id": "nested_3_title",
+          "label": "Accordion Item Heading",
+          "default": "<p>Accordion Item Heading</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+          "type": "richtext",
+          "id": "nested_3_content_heading",
+          "label": "Content Heading",
+          "default": "<p>Content heading</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "nested_3_image_1",
+          "label": "Image",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+          "type": "range",
+          "id": "nested_3_image_max_width",
+          "label": "Image max width",
+          "min": 200,
+          "max": 1600,
+          "step": 25,
+          "default":1600,
+          "unit": "px",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+            "type": "select",
+            "id": "nested_3_image_alignment",
+            "label": "Image alignment",
+            "default": "left",
+            "options": [
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "center",
+                "label": "Center"
+              }
+            ],
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+          },
+        {
+          "type": "richtext",
+          "id": "nested_3_content_text",
+          "label": "Text",
+          "default": "<p>Accordion content</p>",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+        "type": "checkbox",
+        "id": "nested_3_hide_if_no_description",
+        "label": "Hide block if the above text box value is blank.",
+        "default": false,
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+          "type": "text",
+          "id": "nested_3_youtube_id",
+          "label": "Youtube Video ID",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        },
+        {
+          "type": "liquid",
+          "id": "nested_3_liquid_code",
+          "label": "Liquid/HTML Input",
+          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
+        }
 
-  {
+
+      ]
+    },
+    {
       "name": "Custom content",
       "type": "content",
       "settings": [
@@ -662,14 +1211,14 @@
         "id": "custom_id",
         "label": "Custom ID",
         "info" : "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
-      },
-    {
-      "type": "text",
-      "id": "icon_label",
-      "label": "Icon",
-      "placeholder": "Enter icon name",
-      "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
-    },
+        },
+        {
+          "type": "text",
+          "id": "icon_label",
+          "label": "Icon",
+          "placeholder": "Enter icon name",
+          "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
+        },
         {
           "type": "richtext",
           "id": "title",
