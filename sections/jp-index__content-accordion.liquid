@@ -450,9 +450,8 @@
               {{ block.settings.liquid_code }}
               
 
-              {% if block.type == 'nested_content' and block.settings.nested_accordion_count > 0 %}
-              {% assign count = block.settings.nested_accordion_count | times:1 %}
-              {% for i in (1..count) %}
+              {% if block.type == 'nested_content' %}
+              {% for i in (1..10) %}
                   {% capture prefix %}nested_{{ i }}{% endcapture %}
                   {% assign prefix = prefix | strip %}
 
@@ -477,6 +476,12 @@
                   {% assign hide_if_blank     = block.settings[hide_if_blank_key] %}
                   {% assign youtube_id        = block.settings[youtube_id_key] %}
                   {% assign liquid_code       = block.settings[liquid_code_key] %}
+
+                  {% assign title_stripped = title | strip %}
+
+                  {% if title_stripped == blank %}
+                    {% continue %}
+                  {% endif %}
 
                   <div class="multiple_accordion_item item-{{ id }} is-nested" data-depth="2" >
                     <div class="multiple_accordion_title-{{ id }}">
@@ -833,13 +838,13 @@
       "settings": [
         {
           "type": "header",
-          "content" : "Heading"
+          "content": "Heading"
         },
         {
-        "type": "text",
-        "id": "custom_id",
-        "label": "Custom ID",
-        "info" : "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
+          "type": "text",
+          "id": "custom_id",
+          "label": "Custom ID",
+          "info": "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
         },
         {
           "type": "text",
@@ -856,7 +861,7 @@
         },
         {
           "type": "header",
-          "content" : "Content"
+          "content": "Content"
         },
         {
           "type": "richtext",
@@ -876,25 +881,19 @@
           "min": 200,
           "max": 1600,
           "step": 25,
-          "default":1600,
+          "default": 1600,
           "unit": "px"
         },
         {
-            "type": "select",
-            "id": "image_alignment",
-            "label": "Image alignment",
-            "default": "left",
-            "options": [
-              {
-                "value": "left",
-                "label": "Left"
-              },
-              {
-                "value": "center",
-                "label": "Center"
-              }
-            ]
-          },
+          "type": "select",
+          "id": "image_alignment",
+          "label": "Image alignment",
+          "default": "left",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" }
+          ]
+        },
         {
           "type": "richtext",
           "id": "content_text",
@@ -902,10 +901,10 @@
           "default": "<p>Accordion content</p>"
         },
         {
-        "type": "checkbox",
-        "id": "hide_if_no_description",
-        "label": "Hide block if the above text box value is blank.",
-        "default": false
+          "type": "checkbox",
+          "id": "hide_if_no_description",
+          "label": "Hide block if the above text box value is blank.",
+          "default": false
         },
         {
           "type": "text",
@@ -920,282 +919,157 @@
         {
           "type": "liquid",
           "id": "liquid_code",
-          "label": "Liquid/HTML Input" 
-        },
-          {
-            "type": "header",
-            "content" : "Nested Accordions"
-          },
-          {
-            "type": "range",
-            "id": "nested_accordion_count",
-            "label": "Nest Accordion Count",
-          "min": 0,
-          "max": 3,
-          "step": 1,
-          "default":0
-          },
-                    {
-            "type": "header",
-            "content" : "Nested Accordion #1",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-          },
-        {
-          "type": "text",
-          "id": "nested_1_icon_label",
-          "label": "Icon",
-          "placeholder": "Enter icon name",
-          "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+          "label": "Liquid/HTML Input"
         },
         {
-          "type": "richtext",
-          "id": "nested_1_title",
-          "label": "Accordion Item Heading",
-          "default": "<p>Accordion Item Heading</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
+          "type": "header",
+          "content": "Nested Accordion #1",
+          "info":"Will hide itself if Accordion Item Heading is blank"
         },
-        {
-          "type": "richtext",
-          "id": "nested_1_content_heading",
-          "label": "Content Heading",
-          "default": "<p>Content heading</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-        },
-        {
-          "type": "image_picker",
-          "id": "nested_1_image_1",
-          "label": "Image",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-        },
-        {
-          "type": "range",
-          "id": "nested_1_image_max_width",
-          "label": "Image max width",
-          "min": 200,
-          "max": 1600,
-          "step": 25,
-          "default":1600,
-          "unit": "px",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-        },
-        {
-            "type": "select",
-            "id": "nested_1_image_alignment",
-            "label": "Image alignment",
-            "default": "left",
-            "options": [
-              {
-                "value": "left",
-                "label": "Left"
-              },
-              {
-                "value": "center",
-                "label": "Center"
-              }
-            ],
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-          },
-        {
-          "type": "richtext",
-          "id": "nested_1_content_text",
-          "label": "Text",
-          "default": "<p>Accordion content</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-        },
-        {
-        "type": "checkbox",
-        "id": "nested_1_hide_if_no_description",
-        "label": "Hide block if the above text box value is blank.",
-        "default": false,
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-        },
-        {
-          "type": "text",
-          "id": "nested_1_youtube_id",
-          "label": "Youtube Video ID",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-        },
-        {
-          "type": "liquid",
-          "id": "nested_1_liquid_code",
-          "label": "Liquid/HTML Input",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 1 }}"
-        },
-                    {
-            "type": "header",
-            "content" : "Nested Accordion #2",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-          },
-        {
-          "type": "text",
-          "id": "nested_2_icon_label",
-          "label": "Icon",
-          "placeholder": "Enter icon name",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-          "type": "richtext",
-          "id": "nested_2_title",
-          "label": "Accordion Item Heading",
-          "default": "<p>Accordion Item Heading</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-          "type": "richtext",
-          "id": "nested_2_content_heading",
-          "label": "Content Heading",
-          "default": "<p>Content heading</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-          "type": "image_picker",
-          "id": "nested_2_image_1",
-          "label": "Image",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-          "type": "range",
-          "id": "nested_2_image_max_width",
-          "label": "Image max width",
-          "min": 200,
-          "max": 1600,
-          "step": 25,
-          "default":1600,
-          "unit": "px",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-            "type": "select",
-            "id": "nested_2_image_alignment",
-            "label": "Image alignment",
-            "default": "left",
-            "options": [
-              {
-                "value": "left",
-                "label": "Left"
-              },
-              {
-                "value": "center",
-                "label": "Center"
-              }
-            ],
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-          },
-        {
-          "type": "richtext",
-          "id": "nested_2_content_text",
-          "label": "Text",
-          "default": "<p>Accordion content</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-        "type": "checkbox",
-        "id": "nested_2_hide_if_no_description",
-        "label": "Hide block if the above text box value is blank.",
-        "default": false,
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-          "type": "text",
-          "id": "nested_2_youtube_id",
-          "label": "Youtube Video ID",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-        {
-          "type": "liquid",
-          "id": "nested_2_liquid_code",
-          "label": "Liquid/HTML Input",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 2 }}"
-        },
-                    {
-            "type": "header",
-            "content" : "Nested Accordion #3",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-          },
-        {
-          "type": "text",
-          "id": "nested_3_icon_label",
-          "label": "Icon",
-          "placeholder": "Enter icon name",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-          "type": "richtext",
-          "id": "nested_3_title",
-          "label": "Accordion Item Heading",
-          "default": "<p>Accordion Item Heading</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-          "type": "richtext",
-          "id": "nested_3_content_heading",
-          "label": "Content Heading",
-          "default": "<p>Content heading</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-          "type": "image_picker",
-          "id": "nested_3_image_1",
-          "label": "Image",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-          "type": "range",
-          "id": "nested_3_image_max_width",
-          "label": "Image max width",
-          "min": 200,
-          "max": 1600,
-          "step": 25,
-          "default":1600,
-          "unit": "px",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-            "type": "select",
-            "id": "nested_3_image_alignment",
-            "label": "Image alignment",
-            "default": "left",
-            "options": [
-              {
-                "value": "left",
-                "label": "Left"
-              },
-              {
-                "value": "center",
-                "label": "Center"
-              }
-            ],
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-          },
-        {
-          "type": "richtext",
-          "id": "nested_3_content_text",
-          "label": "Text",
-          "default": "<p>Accordion content</p>",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-        "type": "checkbox",
-        "id": "nested_3_hide_if_no_description",
-        "label": "Hide block if the above text box value is blank.",
-        "default": false,
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-          "type": "text",
-          "id": "nested_3_youtube_id",
-          "label": "Youtube Video ID",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        },
-        {
-          "type": "liquid",
-          "id": "nested_3_liquid_code",
-          "label": "Liquid/HTML Input",
-          "visible_if":"{{ block.settings.nested_accordion_count >= 3 }}"
-        }
+        { "type": "text", "id": "nested_1_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_1_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_1_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_1_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_1_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_1_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_1_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_1_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_1_liquid_code", "label": "Liquid/HTML Input" },
 
+        {
+          "type": "header",
+          "content": "Nested Accordion #2",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_2_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_2_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_2_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_2_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_2_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_2_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_2_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_2_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_2_liquid_code", "label": "Liquid/HTML Input" },
 
+        {
+          "type": "header",
+          "content": "Nested Accordion #3",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_3_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_3_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_3_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_3_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_3_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_3_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_3_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_3_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_3_liquid_code", "label": "Liquid/HTML Input" },
+
+        {
+          "type": "header",
+          "content": "Nested Accordion #4",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_4_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_4_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_4_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_4_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_4_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_4_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_4_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_4_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_4_liquid_code", "label": "Liquid/HTML Input" },
+
+        {
+          "type": "header",
+          "content": "Nested Accordion #5",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_5_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_5_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_5_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_5_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_5_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_5_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_5_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_5_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_5_liquid_code", "label": "Liquid/HTML Input" },
+
+        {
+          "type": "header",
+          "content": "Nested Accordion #6",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_6_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_6_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_6_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_6_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_6_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_6_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_6_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_6_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_6_liquid_code", "label": "Liquid/HTML Input" },
+
+        {
+          "type": "header",
+          "content": "Nested Accordion #7",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_7_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_7_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_7_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_7_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_7_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_7_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_7_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_7_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_7_liquid_code", "label": "Liquid/HTML Input" },
+
+        {
+          "type": "header",
+          "content": "Nested Accordion #8",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_8_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_8_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_8_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_8_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_8_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_8_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_8_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_8_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_8_liquid_code", "label": "Liquid/HTML Input" },
+
+        {
+          "type": "header",
+          "content": "Nested Accordion #9",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_9_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_9_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_9_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_9_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_9_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_9_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_9_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_9_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_9_liquid_code", "label": "Liquid/HTML Input" },
+
+        {
+          "type": "header",
+          "content": "Nested Accordion #10",
+          "info":"Will hide itself if Accordion Item Heading is blank"
+        },
+        { "type": "text", "id": "nested_10_icon_label", "label": "Icon" },
+        { "type": "richtext", "id": "nested_10_title", "label": "Accordion Item Heading"},
+        { "type": "richtext", "id": "nested_10_content_heading", "label": "Content Heading" },
+        { "type": "image_picker", "id": "nested_10_image_1", "label": "Image" },
+        { "type": "range", "id": "nested_10_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
+        { "type": "select", "id": "nested_10_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
+        { "type": "richtext", "id": "nested_10_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
+        { "type": "text", "id": "nested_10_youtube_id", "label": "Youtube Video ID" },
+        { "type": "liquid", "id": "nested_10_liquid_code", "label": "Liquid/HTML Input" }
       ]
     },
     {
