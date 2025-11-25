@@ -2,7 +2,7 @@
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
   Tutorial Can be found here : https://jadepuma.com/blogs/shopify-tutorials/add-a-content-accordion-section-in-the-flex-theme?_pos=1&_sid=3fb17e635&_ss=r
-  Last editted - 02OCT25
+  Last editted - 24Nov25
 {% endcomment %}
 
 {% if section.blocks.size > 0 %}
@@ -134,7 +134,7 @@
 
 
         {% if block.type == 'shipping' %}
-          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" data-depth="1">
+          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
             <div class="multiple_accordion_title-{{ id }}">
               <div>
                 <span class="accordion_expand-{{ id }} icon" data-icon="plus">
@@ -197,7 +197,7 @@
         
 
         {% elsif block.type == 'returns' %}
-          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" data-depth="1">
+          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
             <div class="multiple_accordion_title-{{ id }}">
               <div>
                 <span class="accordion_expand-{{ id }} icon" data-icon="plus">
@@ -320,12 +320,12 @@
             </div>
           </div>
 
-        {% elsif block.type == 'content' or block.type == 'nested_content' %}
+        {% elsif block.type == 'content' %}
 
           {% unless block.settings.hide_if_no_description  and  block.settings.content_text == blank %}
 
 
-          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" data-depth="1">
+          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" >
             <div class="multiple_accordion_title-{{ id }}">
               <div>
                 <span class="accordion_expand-{{ id }} icon" data-icon="plus">
@@ -448,168 +448,6 @@
                 <br>
               {% endif %}
               {{ block.settings.liquid_code }}
-              
-
-              {% if block.type == 'nested_content' %}
-              {% for i in (1..10) %}
-                  {% capture prefix %}nested_{{ i }}{% endcapture %}
-                  {% assign prefix = prefix | strip %}
-
-                  {% assign icon_label_key        = prefix | append: '_icon_label' %}
-                  {% assign title_key             = prefix | append: '_title' %}
-                  {% assign content_heading_key   = prefix | append: '_content_heading' %}
-                  {% assign image_key             = prefix | append: '_image_1' %}
-                  {% assign image_max_width_key   = prefix | append: '_image_max_width' %}
-                  {% assign image_alignment_key   = prefix | append: '_image_alignment' %}
-                  {% assign content_text_key      = prefix | append: '_content_text' %}
-                  {% assign hide_if_blank_key     = prefix | append: '_hide_if_no_description' %}
-                  {% assign youtube_id_key        = prefix | append: '_youtube_id' %}
-                  {% assign liquid_code_key       = prefix | append: '_liquid_code' %}
-
-                  {% assign icon_label        = block.settings[icon_label_key] %}
-                  {% assign title             = block.settings[title_key] %}
-                  {% assign content_heading   = block.settings[content_heading_key] %}
-                  {% assign image             = block.settings[image_key] %}
-                  {% assign image_max_width   = block.settings[image_max_width_key] %}
-                  {% assign image_alignment   = block.settings[image_alignment_key] %}
-                  {% assign content_text      = block.settings[content_text_key] %}
-                  {% assign hide_if_blank     = block.settings[hide_if_blank_key] %}
-                  {% assign youtube_id        = block.settings[youtube_id_key] %}
-                  {% assign liquid_code       = block.settings[liquid_code_key] %}
-
-                  {% assign title_stripped = title | strip %}
-
-                  {% if title_stripped == blank %}
-                    {% continue %}
-                  {% endif %}
-
-                  <div class="multiple_accordion_item item-{{ id }} is-nested" data-depth="2" >
-                    <div class="multiple_accordion_title-{{ id }}">
-                      <div>
-                        <span class="accordion_expand-{{ id }} icon" data-icon="plus">
-                          <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                            <g id="plus">
-                              <polygon points="95 46 54 46 54 5 46 5 46 46 5 46 5 54 46 54 46 95 54 95 54 54 95 54 95 46"></polygon>
-                            </g>
-                          </svg>
-                        </span>
-                        <span class="accordion_collapse-{{ id }} icon" style="display:none;" data-icon="minus">
-                          <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                            <g id="minus">
-                              <rect x="5" y="46" width="90" height="8"></rect>
-                            </g>
-                          </svg>
-                        </span>
-                      </div>
-
-                    {% if icon_label != blank %}
-
-                      {%- assign icon = icon_label | downcase -%}
-
-                    <span>
-                    <span class="accordion-icon">
-                    {%
-                        render 'icon',
-                        name: icon
-                        %}
-                      </span>
-
-                      {% style %}
-
-                      .accordion-icon .icon{
-                        transform: translateY(3px) scale(1.2);
-                        margin-left:10px;
-                        margin-right:10px;
-                      }
-
-                      {% endstyle %}
-
-
-                      {% endif %}
-
-
-                      {{ title | strip_html }}
-                    </span>
-                    
-                    </div>
-
-                    <div class="multiple_accordion_content-{{ id }}">
-                      {% unless content_heading == blank %}
-                        <h2 class="accordian_content_heading">{{ content_heading }}</h2>
-                      {% endunless %}
-          
-
-                      {% if image_1 != blank %}
-                      <div class="accordion_section_image-container--{{block.id}}">
-                      <img  class="accordion_section_image--{{block.id}}" src="{{image_1 | img_url: 'master'}}">
-                      </div>
-
-
-                      {% style %}
-
-                        .accordion_section_image--{{block.id}}{
-                          width:100%;
-                          max-width: {{image_max_width}}px;
-                          margin:10px 0;
-                        }
-
-                        .accordion_section_image-container--{{block.id}}{
-                          display:flex;
-                          {% if image_alignment == "center" %}
-                          justify-content:center;
-                          {% endif %}
-                        }
-
-                        
-
-                      {% endstyle %}
-
-
-                      {% endif %}
-
-
-                      {{ content_text }}
-
-                      {% if youtube_id != blank %}
-                        <br>
-                        <div>
-                          <style>
-                            .embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; }
-                            .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-                          </style>
-                          <div class="embed-container">
-                            <iframe
-                              src="https://www.youtube.com/embed/{{ youtube_id }}"
-                              frameborder="0"
-                              allowfullscreen
-                            ></iframe>
-                          </div>
-                        </div>
-                        <br>
-                      {% endif %}
-
-                      {% if youtube_id_2 != blank %}
-                        <br>
-                        <div>
-                          <style>
-                            .embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; }
-                            .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-                          </style>
-                          <div class="embed-container">
-                            <iframe
-                              src="https://www.youtube.com/embed/{{ youtube_id_2 }}"
-                              frameborder="0"
-                              allowfullscreen
-                            ></iframe>
-                          </div>
-                        </div>
-                        <br>
-                      {% endif %}
-                      {{ liquid_code }}
-                    </div>
-                  </div>
-                {% endfor %}
-              {% endif %}
             </div>
           
           </div>
@@ -623,88 +461,68 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 <script>
-(() => {
-  const ACC_ID = '{{ id }}';                                                       // accordion namespace
-  console.log('[Accordion] init', { ACC_ID });                                     // dbg
+  jQuery(function($) {
+    var $section = $('#shopify-section-{{ id }}');
 
-  const sel = {
-    item: `.item-${ACC_ID}`,                                                       // a single accordion item at any level
-    title: `.multiple_accordion_title-${ACC_ID}`,                                  // clickable header
-    content: `.multiple_accordion_content-${ACC_ID}`,                              // collapsible body
-    expand: `.accordion_expand-${ACC_ID}`,                                         // plus icon
-    collapse: `.accordion_collapse-${ACC_ID}`                                      // minus icon
-  };
-
-  const setIcons = ($it, open) => {                                                // toggle icons for one item
-    const $title = $it.children(sel.title);
-    const $expand = $title.find(sel.expand);
-    const $collapse = $title.find(sel.collapse);
-    console.log('[Accordion] setIcons', { open, it: $it.get(0) });                 // dbg
-    if (open) { $expand.hide(); $collapse.show(); $title.addClass('active'); }     // show minus
-    else { $expand.show(); $collapse.hide(); $title.removeClass('active'); }       // show plus
-  };
-
-  // Only toggle when the TITLE is clicked; scope actions to siblings in the SAME parent (same depth)  //
-  $(document)
-    .off('click.accordion', sel.title)
-    .on('click.accordion', sel.title, function (e) {
+    // Click handler: only titles toggle the accordion
+    $section.on('click', '.multiple_accordion_title-{{ id }}', function(e) {
       e.preventDefault();
-      e.stopPropagation();
 
-      const $title = $(this);
-      const $item = $title.closest(sel.item);                                      // the item being toggled (clicked)
-      const $groupParent = $item.parent();                                         // parent container defines depth
-      const $peers = $groupParent.children(sel.item);                              // only same-depth items
-      const $content = $item.children(sel.content);                                // direct child content only
+      var $title        = $(this);
+      var $item         = $title.closest('.item-{{ id }}');
+      var $content      = $item.children('.multiple_accordion_content-{{ id }}');
+      var $iconExpand   = $item.find('.accordion_expand-{{ id }}');
+      var $iconCollapse = $item.find('.accordion_collapse-{{ id }}');
+      var isOpen        = $content.hasClass('open');
 
-      console.log('[Accordion] click', {
-        item: $item.get(0),
-        groupParent: $groupParent.get(0),
-        peers: $peers.length
-      });                                                                           // dbg
-
-      if ($content.hasClass('open')) {                                             // closing current
-        console.log('[Accordion] closing current');                                 // dbg
+      // If already open → close it
+      if (isOpen) {
         $content.removeClass('open').slideUp(300);
-        setIcons($item, false);
+        $iconCollapse.hide();
+        $iconExpand.show();
+        $title.removeClass('active');
         return;
       }
 
+      // If auto_close enabled, close all others first
       {% if section.settings.auto_close %}
-      console.log('[Accordion] auto_close peers in same parent');                   // dbg
-      $peers.not($item).each((i, el) => {                                          // only siblings, not descendants
-        const $peer = $(el);
-        const $peerContent = $peer.children(sel.content);                          // direct child content only
-        if ($peerContent.hasClass('open')) console.log('[Accordion] closing peer', { i, el }); // dbg
-        $peerContent.removeClass('open').slideUp(300);
-        setIcons($peer, false);
-      });
+        var $allItems = $section.find('.item-{{ id }}');
+
+        $allItems.find('.multiple_accordion_content-{{ id }}')
+          .removeClass('open')
+          .slideUp(300);
+
+        $allItems.find('.multiple_accordion_title-{{ id }}')
+          .removeClass('active');
+
+        $allItems.find('.accordion_expand-{{ id }}').show();
+        $allItems.find('.accordion_collapse-{{ id }}').hide();
       {% endif %}
 
-      console.log('[Accordion] opening current');                                   // dbg
-      $content.slideDown(300).addClass('open');                                    // open current
-      setIcons($item, true);
+      // Open this one
+      $content.addClass('open').slideDown(300);
+      $iconCollapse.show();
+      $iconExpand.hide();
+      $title.addClass('active');
     });
 
-  // Clicks inside content shouldn’t toggle anything (protect nested areas)        //
-  $(document)
-    .off('click.accordionContent', sel.content)
-    .on('click.accordionContent', sel.content, function (e) {
-      console.log('[Accordion] content click ignored', { target: e.target });      // dbg
-      e.stopPropagation();
-    });
+    // Auto-open first visible accordion item on page load (if enabled)
+    {% if section.settings.open_first_accordion_on_page_load %}
+      var $firstTitle = $section
+        .find('.item-{{ id }}:visible .multiple_accordion_title-{{ id }}')
+        .first();
 
-  // Optionally open the first item by clicking its TITLE (not the whole item)     //
-  {% if section.settings.open_first_accordion_on_page_load %}
-  setTimeout(() => {
-    const $firstTitle = $('.firstAccordionItem').children(sel.title).first();
-    console.log('[Accordion] open_first_accordion_on_page_load', { found: $firstTitle.length }); // dbg
-    if ($firstTitle.length) $firstTitle.trigger('click');
-  }, 0);
-  {% endif %}
-})();
+      if ($firstTitle.length) {
+        $firstTitle.trigger('click');
+      }
+    {% endif %}
+  });
 </script>
+
+  
 {% endif %}
 
 {% schema %}
@@ -832,437 +650,8 @@
     }
   ],
   "blocks": [
-    {
-      "name": "Nested content",
-      "type": "nested_content",
-      "settings": [
-        {
-          "type": "header",
-          "content": "Heading"
-        },
-        {
-          "type": "text",
-          "id": "custom_id",
-          "label": "Custom ID",
-          "info": "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
-        },
-        {
-          "type": "text",
-          "id": "icon_label",
-          "label": "Icon",
-          "placeholder": "Enter icon name",
-          "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
-        },
-        {
-          "type": "richtext",
-          "id": "title",
-          "label": "Accordion Item Heading",
-          "default": "<p>Accordion Item Heading</p>"
-        },
-        {
-          "type": "header",
-          "content": "Content"
-        },
-        {
-          "type": "richtext",
-          "id": "content_heading",
-          "label": "Content Heading",
-          "default": "<p>Content heading</p>"
-        },
-        {
-          "type": "image_picker",
-          "id": "image_1",
-          "label": "Image"
-        },
-        {
-          "type": "range",
-          "id": "image_max_width",
-          "label": "Image max width",
-          "min": 200,
-          "max": 1600,
-          "step": 25,
-          "default": 1600,
-          "unit": "px"
-        },
-        {
-          "type": "select",
-          "id": "image_alignment",
-          "label": "Image alignment",
-          "default": "left",
-          "options": [
-            { "value": "left", "label": "Left" },
-            { "value": "center", "label": "Center" }
-          ]
-        },
-        {
-          "type": "richtext",
-          "id": "content_text",
-          "label": "Text",
-          "default": "<p>Accordion content</p>"
-        },
-        {
-          "type": "checkbox",
-          "id": "hide_if_no_description",
-          "label": "Hide block if the above text box value is blank.",
-          "default": false
-        },
-        {
-          "type": "text",
-          "id": "youtube_id",
-          "label": "Youtube Video ID"
-        },
-        {
-          "type": "text",
-          "id": "youtube_id_2",
-          "label": "Youtube Video ID"
-        },
-        {
-          "type": "liquid",
-          "id": "liquid_code",
-          "label": "Liquid/HTML Input"
-        },
-        {
-          "type": "header",
-          "content": "Nested Accordion #1",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_1_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_1_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_1_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_1_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_1_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_1_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_1_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_1_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_1_liquid_code", "label": "Liquid/HTML Input" },
 
-        {
-          "type": "header",
-          "content": "Nested Accordion #2",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_2_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_2_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_2_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_2_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_2_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_2_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_2_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_2_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_2_liquid_code", "label": "Liquid/HTML Input" },
-
-        {
-          "type": "header",
-          "content": "Nested Accordion #3",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_3_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_3_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_3_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_3_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_3_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_3_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_3_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_3_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_3_liquid_code", "label": "Liquid/HTML Input" },
-
-        {
-          "type": "header",
-          "content": "Nested Accordion #4",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_4_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_4_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_4_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_4_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_4_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_4_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_4_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_4_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_4_liquid_code", "label": "Liquid/HTML Input" },
-
-        {
-          "type": "header",
-          "content": "Nested Accordion #5",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_5_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_5_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_5_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_5_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_5_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_5_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_5_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_5_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_5_liquid_code", "label": "Liquid/HTML Input" },
-
-        {
-          "type": "header",
-          "content": "Nested Accordion #6",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_6_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_6_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_6_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_6_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_6_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_6_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_6_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_6_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_6_liquid_code", "label": "Liquid/HTML Input" },
-
-        {
-          "type": "header",
-          "content": "Nested Accordion #7",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_7_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_7_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_7_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_7_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_7_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_7_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_7_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_7_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_7_liquid_code", "label": "Liquid/HTML Input" },
-
-        {
-          "type": "header",
-          "content": "Nested Accordion #8",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_8_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_8_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_8_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_8_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_8_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_8_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_8_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_8_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_8_liquid_code", "label": "Liquid/HTML Input" },
-
-        {
-          "type": "header",
-          "content": "Nested Accordion #9",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_9_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_9_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_9_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_9_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_9_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_9_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_9_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_9_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_9_liquid_code", "label": "Liquid/HTML Input" },
-        {
-          "type": "header",
-          "content": "Nested Accordion #_10_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_10_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_10_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_10_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_10_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_10_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_10_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_10_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_10_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_10_liquid_code", "label": "Liquid/HTML Input" }
-        ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_11_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_11_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_11_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_11_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_11_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_11_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_11_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_11_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_11_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_11_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_12_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_12_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_12_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_12_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_12_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_12_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_12_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_12_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_12_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_12_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_13_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_13_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_13_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_13_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_13_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_13_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_13_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_13_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_13_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_13_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_14_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_14_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_14_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_14_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_14_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_14_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_14_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_14_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_14_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_14_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_15_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_15_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_15_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_15_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_15_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_15_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_15_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_15_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_15_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_15_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_16_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_16_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_16_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_16_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_16_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_16_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_16_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_16_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_16_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_16_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_17_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_17_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_17_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_17_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_17_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_17_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_17_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_17_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_17_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_17_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_18_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_18_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_18_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_18_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_18_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_18_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_18_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_18_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_18_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_18_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_19_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_19_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_19_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_19_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_19_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_19_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_19_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_19_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_19_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_19_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_20_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_20_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_20_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_20_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_20_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_20_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_20_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_20_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_20_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_20_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_21_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_21_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_21_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_21_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_21_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_21_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_21_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_21_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_21_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_21_liquid_code", "label": "Liquid/HTML Input" }
-
-                ,
-        {
-          "type": "header",
-          "content": "Nested Accordion #_22_",
-          "info":"Will hide itself if Accordion Item Heading is blank"
-        },
-        { "type": "text", "id": "nested_22_icon_label", "label": "Icon" },
-        { "type": "richtext", "id": "nested_22_title", "label": "Accordion Item Heading"},
-        { "type": "richtext", "id": "nested_22_content_heading", "label": "Content Heading" },
-        { "type": "image_picker", "id": "nested_22_image_1", "label": "Image" },
-        { "type": "range", "id": "nested_22_image_max_width", "label": "Image max width", "min": 200, "max": 1600, "step": 25, "default": 1600, "unit": "px" },
-        { "type": "select", "id": "nested_22_image_alignment", "label": "Image alignment", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "center", "label": "Center" } ] },
-        { "type": "richtext", "id": "nested_22_content_text", "label": "Text", "default": "<p>Accordion content</p>" },
-        { "type": "text", "id": "nested_22_youtube_id", "label": "Youtube Video ID" },
-        { "type": "liquid", "id": "nested_22_liquid_code", "label": "Liquid/HTML Input" }
-      ]
-    },
-    {
+  {
       "name": "Custom content",
       "type": "content",
       "settings": [
@@ -1275,14 +664,14 @@
         "id": "custom_id",
         "label": "Custom ID",
         "info" : "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
-        },
-        {
-          "type": "text",
-          "id": "icon_label",
-          "label": "Icon",
-          "placeholder": "Enter icon name",
-          "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
-        },
+      },
+    {
+      "type": "text",
+      "id": "icon_label",
+      "label": "Icon",
+      "placeholder": "Enter icon name",
+      "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
+    },
         {
           "type": "richtext",
           "id": "title",
