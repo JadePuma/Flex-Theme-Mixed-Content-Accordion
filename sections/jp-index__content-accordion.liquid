@@ -2,16 +2,128 @@
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
   Tutorial Can be found here : https://jadepuma.com/blogs/shopify-tutorials/add-a-content-accordion-section-in-the-flex-theme?_pos=1&_sid=3fb17e635&_ss=r
-  Last editted - 24Nov25
+  Last editted - 02March26
 {% endcomment %}
 
-{% if section.blocks.size > 0 %}
-  {% assign id = section.id %}
-  {% assign padding_top = section.settings.padding_top %}
-  {% assign padding_bottom = section.settings.padding_bottom %}
-  {% assign width = section.settings.width %}
-  {% assign border_color = settings.border_color %}
-  {% assign accordion_icon_color = section.settings.accordion_icon_color %}
+
+{%- assign id = section.id -%}
+{%- assign padding_top = section.settings.padding_top -%}
+{%- assign padding_bottom = section.settings.padding_bottom -%}
+{%- assign width = section.settings.width -%}
+{%- assign accordion_icon_color = section.settings.accordion_icon_color -%}
+
+{%- capture icon_set -%}
+  {% if section.settings.toggle_icon_style == 'carets' %}
+    {% render 'icon', name: 'down-caret', icon_class: 'icon--rotate' %}
+  {% else %}
+    {% render 'icon', name: 'plus', icon_class: 'icon--active' %}
+    {% render 'icon', name: 'minus' %}
+  {% endif %}
+{%- endcapture -%}
+
+{%- comment -%}
+  Detect metaobject FAQ group (optionally overridden by section setting)
+{%- endcomment -%}
+{%- assign faq_group = blank -%}
+
+{%- if section.settings.enable_metaobject_faqs -%}
+
+  {%- if section.settings.faq_group_override != blank -%}
+    {%- assign faq_group = section.settings.faq_group_override -%}
+  {%- elsif article and article.metafields.custom.faq_group.value != blank -%}
+    {%- assign faq_group = article.metafields.custom.faq_group.value -%}
+  {%- elsif product and product.metafields.custom.faq_group.value != blank -%}
+    {%- assign faq_group = product.metafields.custom.faq_group.value -%}
+  {%- elsif page and page.metafields.custom.faq_group.value != blank -%}
+    {%- assign faq_group = page.metafields.custom.faq_group.value -%}
+  {%- elsif collection and collection.metafields.custom.faq_group.value != blank -%}
+    {%- assign faq_group = collection.metafields.custom.faq_group.value -%}
+  {%- endif -%}
+
+{%- endif -%}
+
+{%- assign has_metaobject_faqs = false -%}
+{%- if faq_group != blank and faq_group.items.value != blank and faq_group.items.value.size > 0 -%}
+  {%- assign has_metaobject_faqs = true -%}
+{%- endif -%}
+
+{%- assign should_render_section = false -%}
+{%- if section.blocks.size > 0 or has_metaobject_faqs -%}
+  {%- assign should_render_section = true -%}
+{%- endif -%}
+
+{% if should_render_section %}
+
+
+  {%- comment -%}
+    FAQ structured data
+    Priority: Metaobject FAQs (custom.faq_group) → else FAQ blocks
+  {%- endcomment -%}
+
+  {%- if has_metaobject_faqs -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- for item in faq_group.items.value -%}
+          {
+            "@type": "Question",
+            "name": {{ item.question | strip_html | strip | json }},
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": {{ item.answer | metafield_tag | strip_html | strip_newlines | strip | json }}
+            }
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    }
+    </script>
+
+  {%- else -%}
+
+    {%- assign has_faq_schema = false -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'faq'
+        and block.settings.title != blank
+        and block.settings.answer != blank
+      -%}
+        {%- assign has_faq_schema = true -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if has_faq_schema -%}
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {%- assign first = true -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'faq'
+              and block.settings.title != blank
+              and block.settings.answer != blank
+            -%}
+              {%- unless first -%},{%- endunless -%}
+              {
+                "@type": "Question",
+                "name": {{ block.settings.title | strip_html | strip | json }},
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": {{ block.settings.answer | strip_html | strip_newlines | strip | json }}
+                }
+              }
+              {%- assign first = false -%}
+            {%- endif -%}
+          {%- endfor -%}
+        ]
+      }
+      </script>
+    {%- endif -%}
+
+  {%- endif -%}
+
 
   {% if template contains 'page' %}
     {% assign brand_page = page %}
@@ -31,25 +143,27 @@
     }
 
 
+
+
+
     .multiple_accordion_container-{{ id }}{
         padding: 0px 10px;
         margin:20px auto;
     }
-    .multiple_accordion_heading-{{ id }}{
-      margin-bottom: 15px;
-      font-size:30px;
-      font-weight:400;
-      color:{{section.settings.heading_color}};
-    }
+
+
+
     .multiple_accordion_title-{{ id }}{
       display:grid;
       grid-template-columns: 42px auto;
-      font-size:19.2px;
       padding: 10px 0px 10px;
-      border-bottom:1px solid {{border_color}};
       color:{{section.settings.tab_heading_color}};
+      border-bottom:1px solid {{settings.border_color}};
+      font-size: 1.2rem;
+      padding: 20px 0;
 
     }
+
     .multiple_accordion_content-{{ id }}{
       text-align:left;
       display:none;
@@ -79,19 +193,7 @@
     }
 
 
-    
-    .accordion_expand-{{ id }}{
-        /* transform:translateY(2px); */
-        margin:0px 10px;
-    }
-    .accordion_expand-{{ id }} svg, .accordion_collapse-{{ id }} svg{
-        transform:translateY(3px);
 
-    }
-    .accordion_collapse-{{ id }}{
-        /* transform:translateY(2px); */
-        margin:0px 10px;
-    }
 
     @media only screen and (max-width: 600px) {
     .multiple_accordion_content-{{ id }}{
@@ -101,11 +203,42 @@
 
 
     }
-    .multiple_accordion_title-{{ id }}{
-      border-bottom:0px solid {{border_color}};
+ 
+    }
 
+    /* === JP icon style toggle (Flex-style icons) === */
+    .multiple_accordion_title-{{ id }}.accordion-style--plus .icon { display:none; }
+    .multiple_accordion_title-{{ id }}.accordion-style--plus .icon--active { display:inline-block; }
+
+    /* when open, show minus instead of plus */
+    .multiple_accordion_title-{{ id }}.accordion-style--plus.active .icon--active { display:none; }
+    .multiple_accordion_title-{{ id }}.accordion-style--plus.active .icon:not(.icon--active) { display:inline-block; }
+
+    /* caret rotate */
+    .multiple_accordion_title-{{ id }}.accordion-style--carets .icon--rotate{
+      transition: transform .2s ease;
+      transform: translateY(3px) rotate(0deg);
     }
+    .multiple_accordion_title-{{ id }}.accordion-style--carets.active .icon--rotate{
+      transform: translateY(3px) rotate(180deg);
     }
+
+
+    .jp-accordion-icon-slot{
+      margin:0 10px;
+      display:flex;
+      justify-content:center;
+    }
+    .jp-accordion-icon-slot .icon{
+      transform: translateY(3px);
+    }
+
+
+    .jp-accordion-icon-slot{
+      color: {{ accordion_icon_color }};
+    }
+
+
   {% endstyle %}
 
   <div id="about-the-brand-position"></div>
@@ -116,39 +249,61 @@
     "
   >
     <div class="multiple_accordion_container-{{ id }}" style="margin-bottom:-20px !important;">
-        {% if section.settings.title != blank %}
-          <h2 class="multiple_accordion_heading-{{ id }}">{{ section.settings.title }}</h2>
-        {% endif %}
+      
+      {%- if section.settings.title != blank -%}
+        {% render 'heading',
+          title: section.settings.title,
+          heading_tag: 'h2',
+          context: 'faq',
+          text_alignment: 'left'
+        %}
+        {%- endif -%}
 
-        {% if section.settings.show_divider %}
-          <div
-            class="heading-divider heading-divider--short"
-            style="margin-bottom:40px; border: 0.5px solid {{border_color}};"
-          ></div>
-        {% endif %}
+        {%- if has_metaobject_faqs -%}
+
+          {%- if has_metaobject_faqs and faq_group.heading != blank -%}
+            <h2 class="title faq-title" style="margin-bottom:1rem;">{{ faq_group.heading | escape }}</h2>
+          {%- endif -%}
+
+
+          {%- for item in faq_group.items.value -%}
+            <div class="multiple_accordion_item item-{{ id }} {% if forloop.first %} firstAccordionItem {% endif %}">
+              <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+                <div class="jp-accordion-icon-slot">
+                  {{ icon_set }}
+                </div>
+                {{ item.question | strip_html }}
+              </div>
+
+              <div class="multiple_accordion_content-{{ id }}">
+                {{ item.answer | metafield_tag }}
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+
+      
+
+
+
       {% for block in section.blocks %}
 
 
-        {% if block.type == 'shipping' %}
-          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
-            <div class="multiple_accordion_title-{{ id }}">
-              <div>
-                <span class="accordion_expand-{{ id }} icon" data-icon="plus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="plus">
-                      <polygon points="95 46 54 46 54 5 46 5 46 46 5 46 5 54 46 54 46 95 54 95 54 54 95 54 95 46"></polygon>
-                    </g>
-                  </svg>
-                </span>
-                <span class="accordion_collapse-{{ id }} icon" style="display:none;" data-icon="minus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="minus">
-                      <rect x="5" y="46" width="90" height="8"></rect>
-                    </g>
-                  </svg>
-                </span>
-              </div>
+        {% if block.type == 'heading' %}
 
+            {% if block.settings.title != blank %}
+              <h2 class="title faq-title" style="margin-bottom:1rem;">{{ block.settings.title }}</h2>
+            {% endif %}
+
+
+
+        {% elsif block.type == 'shipping' %}
+          <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
+            <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+
+          <div class="jp-accordion-icon-slot">
+            {{ icon_set }}
+          </div>
             {% if block.settings.icon_label != blank %}
 
               {%- assign icon = block.settings.icon_label | downcase -%}
@@ -194,23 +349,11 @@
 
         {% elsif block.type == 'returns' %}
           <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
-            <div class="multiple_accordion_title-{{ id }}">
-              <div>
-                <span class="accordion_expand-{{ id }} icon" data-icon="plus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="plus">
-                      <polygon points="95 46 54 46 54 5 46 5 46 46 5 46 5 54 46 54 46 95 54 95 54 54 95 54 95 46"></polygon>
-                    </g>
-                  </svg>
-                </span>
-                <span class="accordion_collapse-{{ id }} icon" style="display:none;" data-icon="minus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="minus">
-                      <rect x="5" y="46" width="90" height="8"></rect>
-                    </g>
-                  </svg>
-                </span>
-              </div>
+            <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+
+            <div class="jp-accordion-icon-slot">
+              {{ icon_set }}
+            </div>
 
             {% if block.settings.icon_label != blank %}
 
@@ -254,26 +397,15 @@
             </div>
           </div>
 
-          {% elsif block.type == 'page' %}
+        {% elsif block.type == 'page' %}
           {% assign page = block.settings.page %}
             <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}">
-            <div class="multiple_accordion_title-{{ id }}">
-              <div>
-                <span class="accordion_expand-{{ id }} icon" data-icon="plus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="plus">
-                      <polygon points="95 46 54 46 54 5 46 5 46 46 5 46 5 54 46 54 46 95 54 95 54 54 95 54 95 46"></polygon>
-                    </g>
-                  </svg>
-                </span>
-                <span class="accordion_collapse-{{ id }} icon" style="display:none;" data-icon="minus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="minus">
-                      <rect x="5" y="46" width="90" height="8"></rect>
-                    </g>
-                  </svg>
-                </span>
-              </div>
+            <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+
+            <div class="jp-accordion-icon-slot">
+              {{ icon_set }}
+            </div>
+
 
             {% if block.settings.icon_label != blank %}
 
@@ -322,23 +454,12 @@
 
 
           <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{block.settings.custom_id}}" >
-            <div class="multiple_accordion_title-{{ id }}">
-              <div>
-                <span class="accordion_expand-{{ id }} icon" data-icon="plus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="plus">
-                      <polygon points="95 46 54 46 54 5 46 5 46 46 5 46 5 54 46 54 46 95 54 95 54 54 95 54 95 46"></polygon>
-                    </g>
-                  </svg>
-                </span>
-                <span class="accordion_collapse-{{ id }} icon" style="display:none;" data-icon="minus">
-                  <svg style="color:{{accordion_icon_color}};" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                    <g id="minus">
-                      <rect x="5" y="46" width="90" height="8"></rect>
-                    </g>
-                  </svg>
-                </span>
-              </div>
+            <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+
+            <div class="jp-accordion-icon-slot">
+              {{ icon_set }}
+            </div>
+
 
             {% if block.settings.icon_label != blank %}
 
@@ -379,7 +500,7 @@
 
               {% if block.settings.image_1 != blank %}
               <div class="accordion_section_image-container--{{block.id}}">
-              <img  class="accordion_section_image--{{block.id}}" src="{{block.settings.image_1 | img_url: 'master'}}">
+              <img  class="accordion_section_image--{{block.id}}" src="{{block.settings.image_1 | img_url: 'master'}}" alt="{{ block.settings.image_1.alt }}">
               </div>
 
 
@@ -450,14 +571,52 @@
 
           {% endunless %}
 
-        {% endif %}
+        {% elsif block.type == 'faq' %}
+
+            <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{ block.settings.custom_id }}">
+              <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+
+                <div class="jp-accordion-icon-slot">
+                  {{ icon_set }}
+                </div>
+
+                {% if block.settings.icon_label != blank %}
+                  {%- assign icon = block.settings.icon_label | downcase -%}
+
+                  <span>
+                    <span class="accordion-icon">
+                      {% render 'icon', name: icon %}
+                    </span>
+
+                    {% style %}
+                      .accordion-icon .icon{
+                        transform: translateY(3px) scale(1.2);
+                        margin-left:10px;
+                        margin-right:10px;
+                      }
+                    {% endstyle %}
+                {% endif %}
+
+                {{ block.settings.title | strip_html }}
+                </span>
+
+              </div>
+
+              <div class="multiple_accordion_content-{{ id }}">
+                {{ block.settings.answer }}
+              </div>
+            </div>
+
+
+          {% endif %}
+
       {% endfor %}
     </div>
   </section>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 
 <script>
   jQuery(function($) {
@@ -470,15 +629,11 @@
       var $title        = $(this);
       var $item         = $title.closest('.item-{{ id }}');
       var $content      = $item.children('.multiple_accordion_content-{{ id }}');
-      var $iconExpand   = $item.find('.accordion_expand-{{ id }}');
-      var $iconCollapse = $item.find('.accordion_collapse-{{ id }}');
       var isOpen        = $content.hasClass('open');
 
       // If already open → close it
       if (isOpen) {
         $content.removeClass('open').slideUp(300);
-        $iconCollapse.hide();
-        $iconExpand.show();
         $title.removeClass('active');
         return;
       }
@@ -494,14 +649,10 @@
         $allItems.find('.multiple_accordion_title-{{ id }}')
           .removeClass('active');
 
-        $allItems.find('.accordion_expand-{{ id }}').show();
-        $allItems.find('.accordion_collapse-{{ id }}').hide();
       {% endif %}
 
       // Open this one
       $content.addClass('open').slideDown(300);
-      $iconCollapse.show();
-      $iconExpand.hide();
       $title.addClass('active');
     });
 
@@ -536,13 +687,24 @@
       "info": "If this field left blank, it will use the brand page metafield 'Accordion heading'"
     },
     {
-      "type": "color",
-      "id": "heading_color",
-      "label": "Heading color"
-    }, 
+      "type": "checkbox",
+      "id": "enable_metaobject_faqs",
+      "label": "Show metaobject FAQs if available",
+      "default": true
+    },
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "toggle_icon_style",
+      "label": "Accordion icon style",
+      "default": "plus",
+      "options": [
+        { "value": "plus", "label": "Plus / minus" },
+        { "value": "carets", "label": "Caret (rotates)" }
+      ]
     },
     {
     "type": "checkbox",
@@ -554,12 +716,6 @@
     "type": "checkbox",
     "id": "open_first_accordion_on_page_load",
     "label": "Auto-open first accordion",
-    "default": false
-    },
-    {
-    "type": "checkbox",
-    "id": "show_divider",
-    "label": "Heading Divider",
     "default": false
     },
     {
@@ -646,7 +802,46 @@
     }
   ],
   "blocks": [
-
+      {
+        "name": "Heading",
+        "type": "heading",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",  
+            "label": "Heading",
+            "default": "Section heading"
+          }
+        ]
+      },
+      {
+        "name": "FAQ",
+        "type": "faq",
+        "settings": [
+          {
+            "type": "header",
+            "content": "FAQ (Structured Data Compatible)"
+          },
+          {
+            "type": "text",
+            "id": "custom_id",
+            "label": "Custom ID",
+            "info": "(Optional) Add a custom html ID for this accordion element that may be used to navigate to and open the accordion from elsewhere on page."
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Question",
+            "default": "What is your question?"
+          },
+          {
+            "type": "richtext",
+            "id": "answer",
+            "label": "Answer",
+            "default": "<p>Provide the answer to the question here.</p>"
+          }
+        ]
+      },   
   {
       "name": "Custom content",
       "type": "content",
@@ -749,11 +944,6 @@
       "name":"Page",
       "type":"page",
       "settings":[
-        {
-        "type": "text",
-        "id": "custom_id",
-        "label": "Custom ID"
-        },
                   {
         "type": "page",
         "id": "page",
@@ -786,13 +976,7 @@
           "type": "richtext",
           "id": "title",
           "label": "Accordion Item Heading"
-        },
-          {
-          "type": "text",
-          "id": "icon_label",
-          "label": "Icon",
-          "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
-         }
+        }
         ]
     },
     {
@@ -815,12 +999,6 @@
             "type": "richtext",
             "id": "title",
             "label": "Accordion Item Heading"
-          },
-          {
-            "type": "text",
-            "id": "icon_label",
-            "label": "Icon",
-            "info": "[Icon list](https://help.outofthesandbox.com/hc/en-us/articles/360021570294)"
           }
         ]
     }
@@ -835,8 +1013,8 @@
  "templates": [
     "product",
     "page",
-     "collection"
+    "collection",
+    "article"
   ]
 }
 {% endschema %}
-
