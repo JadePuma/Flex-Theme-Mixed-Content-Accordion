@@ -2,7 +2,7 @@
   Mixed Content Accordion for product and brand pages
   Code created by JadePuma
   Tutorial Can be found here : https://jadepuma.com/blogs/shopify-tutorials/add-a-content-accordion-section-in-the-flex-theme?_pos=1&_sid=3fb17e635&_ss=r
-  Last editted - 02March26
+  Last editted - 04Mar26
 {% endcomment %}
 
 
@@ -54,76 +54,71 @@
 
 {% if should_render_section %}
 
+{%- comment -%}
+  FAQ structured data (combined)
+  Includes:
+  1) Metaobject FAQs (custom.faq_group) if available
+  2) Manual FAQ blocks (block.type == 'faq')
+  Skips empty Q/A after stripping.
+{%- endcomment -%}
 
-  {%- comment -%}
-    FAQ structured data
-    Priority: Metaobject FAQs (custom.faq_group) → else FAQ blocks
-  {%- endcomment -%}
+{%- capture faq_entities -%}
+  {%- assign first = true -%}
 
+  {%- comment -%} 1) Metaobject FAQs {%- endcomment -%}
   {%- if has_metaobject_faqs -%}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {%- for item in faq_group.items.value -%}
-          {
-            "@type": "Question",
-            "name": {{ item.question | strip_html | strip | json }},
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": {{ item.answer | metafield_tag | strip_html | strip_newlines | strip | json }}
-            }
-          }{%- unless forloop.last -%},{%- endunless -%}
-        {%- endfor -%}
-      ]
-    }
-    </script>
+    {%- for item in faq_group.items.value -%}
+      {%- assign q = item.question | strip_html | strip -%}
+      {%- assign a = item.answer | metafield_tag | strip_html | strip_newlines | strip -%}
 
-  {%- else -%}
-
-    {%- assign has_faq_schema = false -%}
-    {%- for block in section.blocks -%}
-      {%- if block.type == 'faq'
-        and block.settings.title != blank
-        and block.settings.answer != blank
-      -%}
-        {%- assign has_faq_schema = true -%}
-        {%- break -%}
+      {%- if q != blank and q.size > 1 and a != blank and a.size > 1 -%}
+        {%- unless first -%},{%- endunless -%}
+        {
+          "@type": "Question",
+          "name": {{ q | json }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ a | json }}
+          }
+        }
+        {%- assign first = false -%}
       {%- endif -%}
     {%- endfor -%}
-
-    {%- if has_faq_schema -%}
-      <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {%- assign first = true -%}
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'faq'
-              and block.settings.title != blank
-              and block.settings.answer != blank
-            -%}
-              {%- unless first -%},{%- endunless -%}
-              {
-                "@type": "Question",
-                "name": {{ block.settings.title | strip_html | strip | json }},
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": {{ block.settings.answer | strip_html | strip_newlines | strip | json }}
-                }
-              }
-              {%- assign first = false -%}
-            {%- endif -%}
-          {%- endfor -%}
-        ]
-      }
-      </script>
-    {%- endif -%}
-
   {%- endif -%}
 
+  {%- comment -%} 2) Manual FAQ blocks {%- endcomment -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'faq' -%}
+      {%- assign q = block.settings.title | strip_html | strip -%}
+      {%- assign a = block.settings.answer | strip_html | strip_newlines | strip -%}
+
+      {%- if q != blank and q.size > 1 and a != blank and a.size > 1 -%}
+        {%- unless first -%},{%- endunless -%}
+        {
+          "@type": "Question",
+          "name": {{ q | json }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ a | json }}
+          }
+        }
+        {%- assign first = false -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+{%- endcapture -%}
+
+{%- assign faq_entities_stripped = faq_entities | strip -%}
+{%- if faq_entities_stripped != blank -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{{ faq_entities_stripped }}]
+  }
+  </script>
+{%- endif -%}
 
   {% if template contains 'page' %}
     {% assign brand_page = page %}
@@ -266,20 +261,24 @@
           {%- endif -%}
 
 
-          {%- for item in faq_group.items.value -%}
-            <div class="multiple_accordion_item item-{{ id }} {% if forloop.first %} firstAccordionItem {% endif %}">
-              <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
-                <div class="jp-accordion-icon-slot">
-                  {{ icon_set }}
-                </div>
-                {{ item.question | strip_html }}
-              </div>
+            {%- for item in faq_group.items.value -%}
+              {%- assign q_clean = item.question | strip_html | strip -%}
+              {%- assign a_clean = item.answer | metafield_tag | strip_html | strip_newlines | strip -%}
 
-              <div class="multiple_accordion_content-{{ id }}">
-                {{ item.answer | metafield_tag }}
-              </div>
-            </div>
-          {%- endfor -%}
+              {%- if q_clean != blank and a_clean != blank -%}
+                <div class="multiple_accordion_item item-{{ id }} {% if forloop.first %} firstAccordionItem {% endif %}">
+                  <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+                    <div class="jp-accordion-icon-slot">{{ icon_set }}</div>
+                    {{ q_clean }}
+                  </div>
+
+                  <div class="multiple_accordion_content-{{ id }}">
+                    {{ item.answer | metafield_tag }}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+
         {%- endif -%}
 
       
@@ -571,44 +570,44 @@
 
           {% endunless %}
 
-        {% elsif block.type == 'faq' %}
+            {% elsif block.type == 'faq' %}
 
-            <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{ block.settings.custom_id }}">
-              <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+              {%- assign q_clean = block.settings.title | strip_html | strip -%}
+              {%- assign a_clean = block.settings.answer | strip_html | strip_newlines | strip -%}
 
-                <div class="jp-accordion-icon-slot">
-                  {{ icon_set }}
-                </div>
+              {%- if q_clean != blank and a_clean != blank -%}
+                <div class="multiple_accordion_item item-{{ id }} {% if forloop.index == 1 %} firstAccordionItem {% endif %}" id="{{ block.settings.custom_id }}">
+                  <div class="multiple_accordion_title-{{ id }} accordion-style--{{ section.settings.toggle_icon_style }}">
+                    <div class="jp-accordion-icon-slot">
+                      {{ icon_set }}
+                    </div>
 
-                {% if block.settings.icon_label != blank %}
-                  {%- assign icon = block.settings.icon_label | downcase -%}
+                    {% if block.settings.icon_label != blank %}
+                      {%- assign icon = block.settings.icon_label | downcase -%}
+                      <span>
+                        <span class="accordion-icon">
+                          {% render 'icon', name: icon %}
+                        </span>
+                        {% style %}
+                          .accordion-icon .icon{
+                            transform: translateY(3px) scale(1.2);
+                            margin-left:10px;
+                            margin-right:10px;
+                          }
+                        {% endstyle %}
+                    {% endif %}
 
-                  <span>
-                    <span class="accordion-icon">
-                      {% render 'icon', name: icon %}
+                    {{ q_clean }}
                     </span>
+                  </div>
 
-                    {% style %}
-                      .accordion-icon .icon{
-                        transform: translateY(3px) scale(1.2);
-                        margin-left:10px;
-                        margin-right:10px;
-                      }
-                    {% endstyle %}
-                {% endif %}
+                  <div class="multiple_accordion_content-{{ id }}">
+                    {{ block.settings.answer }}
+                  </div>
+                </div>
+              {%- endif -%}
 
-                {{ block.settings.title | strip_html }}
-                </span>
-
-              </div>
-
-              <div class="multiple_accordion_content-{{ id }}">
-                {{ block.settings.answer }}
-              </div>
-            </div>
-
-
-          {% endif %}
+            {% endif %}
 
       {% endfor %}
     </div>
